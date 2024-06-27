@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://i.namu.wiki/i/gFMpf7qOe9pdHzFgOtJ7PRywQiY5m7BDfJZoNpD9zP03jg2voZU88ZAY0PkUAebbF79vj7djAJTS-UbpzAt6QQ.webp'); /* 배경 이미지 경로 설정 */
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 80%;
+            margin-bottom: 20px;
+        }
+        
+        .character {
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+            width: 300px; /* Adjusted width */
+        }
+        
+        .character h2 {
+            color: #333;
+            font-size: 24px; /* Increased font size */
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        
+        .stats div {
+            margin-bottom: 5px;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        span {
+            display: inline-block;
+            min-width: 30px;
+        }
+        
+        button {
+            padding: 10px 20px; /* Increased padding */
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px; /* Increased font size */
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .critical-hit {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px; /* Increased margin */
+            font-size: 16px; /* Increased font size */
+        }
+
+        .battle-log {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .health-bar {
+            width: 100%;
+            height: 30px; /* Increased height */
+            background-color: lightgray;
+            margin-top: 10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            background-color: green;
+        }
+
+        .character img {
+            width: 200px; /* Increased image size */
+            height: 200px; /* Adjust height as needed */
+            border-radius: 50%; /* Make it round */
+            margin-bottom: 10px;
+        }
+
+        .start-button {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="start-button">
+        <button onclick="startBattle()">Start Battle</button>
+    </div>
+
+    <div class="container">
+        <div class="character" id="character1">
+            <h2>야스오</h2>
+            <img src="data:image/jpeg;base64,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" alt="야스오 초상화">
+            <div class="stats">
+                <div>
+                    <label>Health:</label>
+                    <span id="health1">110</span>
+                </div>
+                <div>
+                    <label>Attack:</label>
+                    <span id="attack1">15</span>
+                    <span class="critical-chance">(Critical Chance: 20%)</span> <!-- 전사의 치명타 확률 20%로 변경 -->
+                </div>
+                <div class="health-bar">
+                    <div class="health-bar-fill" id="healthBar1"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="character" id="character2">
+            <h2>요네</h2>
+            <img src="data:image/jpeg;base64,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" alt="요네 초상화">
+            <div class="stats">
+                <div>
+                    <label>Health:</label>
+                    <span id="health2">90</span>
+                </div>
+                <div>
+                    <label>Attack:</label>
+                    <span id="attack2">25</span>
+                    <span class="critical-chance">(Critical Chance: 10%)</span>
+                </div>
+                <div class="health-bar">
+                    <div class="health-bar-fill" id="healthBar2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="battle-log" id="battleLog"></div>
+
+    <script>
+        var characters = [
+            { id: 'character1', name: '야스오', health: 110, attack: 15, criticalChance: 0.2 }, // 전사의 치명타 확률 20%로 변경
+            { id: 'character2', name: '요네', health: 90, attack: 25, criticalChance: 0.1 }
+        ];
+
+        var battleLog = document.getElementById('battleLog');
+
+        // Function to start auto-attack
+        function startAutoAttack() {
+            var intervalId = setInterval(function() {
+                var attackerIndex = turn % 2;
+                var defenderIndex = (turn + 1) % 2;
+
+                attack(characters[attackerIndex], characters[defenderIndex]);
+                turn++;
+
+                // Check if battle is over
+                if (characters[defenderIndex].health <= 0) {
+                    clearInterval(intervalId);
+                    battleLog.innerHTML += '<p>Battle Over! ' + characters[defenderIndex].name + ' is defeated.</p>';
+                }
+            }, 1000); // Auto-attack interval set to 1 second (adjust as needed)
+        }
+
+        // Function to handle attacks
+        function attack(attacker, defender) {
+            var damage = Math.floor(Math.random() * attacker.attack) + 1;
+
+            // Check for critical hit
+            var criticalHit = Math.random() < attacker.criticalChance;
+            if (criticalHit) {
+                damage *= 2; // Double damage on critical hit
+                var message = 'Critical Hit! ' + attacker.name + ' dealt double damage (' + damage + ' damage)!';
+                battleLog.innerHTML += '<p class="critical-hit">' + message + '</p>';
+                shakeScreen(); // 화면을 흔들어주는 함수 호출
+            }
+
+            defender.health -= damage;
+            if (defender.health < 0) {
+                defender.health = 0;
+            }
+            updateHealth(defender);
+        }
+
+        // Function to update character's health on UI
+        function updateHealth(character) {
+            var healthElement = document.getElementById('health' + character.id.slice(-1));
+            var healthBarElement = document.getElementById('healthBar' + character.id.slice(-1));
+            
+            healthElement.textContent = character.health;
+            var healthPercentage = (character.health / 100) * 100; // Assuming max health is 100 for simplicity
+            healthBarElement.style.width = healthPercentage + '%';
+        }
+
+        // Function to start battle when Start Battle button is clicked
+        function startBattle() {
+            turn = 1; // Reset turn counter
+            battleLog.innerHTML = ''; // Clear previous battle log
+            // Reset characters' health
+            characters.forEach(function(character) {
+                character.health = (character.id === 'character1') ? 110 : 90;
+                updateHealth(character);
+            });
+            startAutoAttack();
+        }
+
+        // Function to shake the screen slightly
+        function shakeScreen() {
+            var initialPosition = 0;
+            var shakeInterval = setInterval(function() {
+                initialPosition += 5;
+                document.body.style.marginLeft = initialPosition % 2 === 0 ? '5px' : '0';
+                if (initialPosition >= 20) {
+                    clearInterval(shakeInterval);
+                    document.body.style.marginLeft = '0';
+                }
+            }, 50); // Adjust the shaking speed and distance as needed
+        }
+    </script>
+</body>
+</html>
